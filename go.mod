@@ -1,4 +1,4 @@
-module github.com/skanehira/go-test/sample-todo
+module github.com/skanehira/sample-todo
 
 go 1.13
 

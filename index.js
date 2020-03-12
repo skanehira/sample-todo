@@ -1,59 +1,47 @@
 const app = new Vue({
   el: '#app',
   data: {
-    form: {
-      title: "",
-      detail: "",
-    },
+    form: {},
     header: [
       "id",
-      "title",
-      "detail",
+      "name",
+      "todo",
       "operation",
     ],
-    todos:[
-    ],
-    message: 'Hello Vue!'
+    todos: []
   },
   methods: {
-    resetFrom() {
-      this.form = {}
-    },
-    getTodo() {
-      axios.get("/todos").then(response => {
-        this.todos = response.data
-      }).catch(err => {
-        alert(err)
+    createTodo() {
+      axios.post("/todos", this.form).then((response) => {
+        alert("登録しました")
+        this.getTodos()
+        this.form = {}
+      }).catch((error) => {
+        console.log(error);
       })
     },
-    addTodo(event) {
-      event.preventDefault();
-      if (!this.form.title || !this.form.detail) {
-        alert("タイトルまたは詳細が入力されていません")
-        return
-      }
-      axios.post("/add", this.form).then(() => {
-        alert("登録できました")
-        this.getTodo()
-      }).catch(err => {
-        alert(err)
+    getTodos() {
+      axios.get("/todos", {}).then((response) => {
+        this.todos = response.data;
+      }).catch((error) => {
+        console.log(error);
       })
     },
     deleteTodo(id) {
-      axios.delete("/delete", {
+      axios.delete("/todos", {
         params: {
           id: id,
         }
-      }).then(() => {
+      }).then((response) => {
         alert("削除しました")
-        this.getTodo()
-      }).catch(err => {
-        alert(err)
+        this.getTodos()
+      }).catch((error) => {
+        console.log(error)
       })
     }
   },
   mounted(){
-    this.getTodo()
+    this.getTodos();
   }
 })
 
