@@ -28,12 +28,16 @@ const app = new Vue({
     },
     addTodo(event) {
       event.preventDefault();
+      if (!this.form.title || !this.form.detail) {
+        alert("タイトルまたは詳細が入力されていません")
+        return
+      }
       axios.post("/add", this.form).then(() => {
         alert("登録できました")
+        this.getTodo()
       }).catch(err => {
         alert(err)
       })
-      this.getTodo()
     },
     deleteTodo(id) {
       axios.delete("/delete", {

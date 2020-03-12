@@ -8,20 +8,22 @@
 </head>
 <body>
   <div id="app">
-    <form>
-      <div>
-        <label for="">Title</label>
-        <input v-model="form.title">
-      </div>
-      <div>
-        <label for="">Detail</label>
-        <textarea v-model="form.detail"></textarea>
-      </div>
-      <div>
-        <button @click="addTodo">登録</button>
-      </div>
-    </form>
+    <table>
+      <tr>
+        <td>Title</td>
+        <td><input v-model="form.title"></td>
+      </tr>
+      <tr>
+        <td>Todo</td>
+        <td><textarea v-model="form.detail"></textarea></td>
+      </tr>
+      <tr>
+        <td><button @click="addTodo">登録</button></td>
+      </tr>
+    </table>
+
     <br>
+
     <table border=1>
       <th v-for="h in header">{{h}}</th>
       <tr v-for="todo in todos">
