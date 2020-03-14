@@ -81,6 +81,10 @@ func main() {
 	}
 	defer db.Close()
 
+	if _, err := db.Exec("create table if not exists todos (id integer primary key autoincrement, name varchar(255), todo varchar(255))"); err != nil {
+		log.Fatal(err)
+	}
+
 	http.Handle("/", http.FileServer(http.Dir(".")))
 	http.HandleFunc("/todos", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
