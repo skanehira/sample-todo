@@ -1,39 +1,24 @@
 <!DOCTYPE html>
 <html lang="ja">
-  <head>
-    <meta charset="UTF-8">
-    <title>Todo</title>
-    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.2/axios.js"></script>
-  </head>
-  <body>
-    <div id="app">
-      <table>
-        <tr>
-          <td>Name</td>
-          <td><input type="text" v-model="form.name"></td>
-        </tr>
-        <tr>
-        <tr>
-          <td>Todo</td>
-          <td><textarea v-model="form.todo"></textarea></td>
-        </tr>
-          <td><button @click="createTodo">登録</button></td>
-        </tr>
-      </table>
-
-      <hr>
-
-      <table border=1>
-        <tr>
-          <td v-for="h in header">{{h}}</td>
-        </tr>
-        <tr v-for="t in todos">
-          <td v-for="c in t">{{c}}</td>
-          <td><button @click="deleteTodo(t.id)">削除</button></td>
-        </tr>
-      </table>
-    </div>
-  </body>
+<head>
+  <meta charset="UTF-8">
+  <title>Todo</title>
+</head>
+<body>
+  <table>
+    <tr>
+      <td>名前</td><td><input type="text" id="name"></td>
+    </tr>
+    <tr>
+      <td>Todo</td><td><input type="text" id="todo"></td>
+    </tr>
+    <tr>
+      <td><button onclick="createTodo()">登録</button></td>
+    </tr>
+  </table>
+  <hr>
+  <table border=1 id="table">
+  </table>
   <script src="index.js"></script>
+</body>
 </html>
