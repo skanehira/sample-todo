@@ -76,8 +76,6 @@ function createTodo() {
   }).catch((err) => {
     console.log(err);
   })
-
-  console.log(`name: ${name}, todo: ${todo}`)
 }
 
 function deleteTodo() {
