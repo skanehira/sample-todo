@@ -1,58 +1,3 @@
-const table = document.getElementById("table")
-
-function makeTr(data) {
-  const tr = document.createElement("tr")
-
-  for (h of data) {
-    if (h == "button") {
-      const bt = document.createElement("button")
-      bt.textContent = "削除"
-      bt.onclick = function() {
-        const id = data[0]
-
-        fetch(`/todos?id=${id}`, {
-          method: 'DELETE',
-        }).then((response) => {
-          if (response.ok) {
-            alert("削除しました")
-            updateTable()
-          } else {
-            alert("エラー")
-          }
-        }).catch((err) => {
-          console.log(err);
-        })
-      }
-      tr.appendChild(bt)
-    } else {
-      const td = document.createElement("td")
-      td.textContent = h
-      tr.appendChild(td)
-    }
-  }
-
-  return tr
-}
-
-function makeHeader() {
-  const headers = ["id", "name", "todo", "operation"]
-  return makeTr(headers)
-}
-
-function getTodo() {
-  fetch("/todos").then((response) => {
-    return response.json();
-  }).then((todos) => {
-    for (todo of todos) {
-      let t = Object.values(todo)
-      t.push("button")
-      table.appendChild(makeTr(t))
-    }
-  }).catch((err) => {
-    console.log(err);
-  })
-}
-
 function createTodo() {
   const name = document.getElementById("name")
   const todo = document.getElementById("todo")
@@ -68,25 +13,66 @@ function createTodo() {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify(form),
-  }).then(() => {
-    alert("登録しました")
-    updateTable()
-    name.value = ""
-    todo.value = ""
+  }).then((response) => {
+    if (response.ok) {
+      alert("登録しました")
+      getTodo()
+    } else {
+      alert("登録失敗しました")
+    }
   }).catch((err) => {
     console.log(err);
   })
 }
 
-function deleteTodo() {
-
+function getTodo() {
+  fetch("/todos").then((response) => {
+    return response.json();
+  }).then((todos) => {
+    for (const todo of todos) {
+      todo.button = "button"
+    }
+    makeTodoTable(todos)
+  }).catch((err) => {
+    console.log(err);
+  })
 }
 
-function updateTable() {
-    table.innerHTML = ""
-    table.appendChild(makeHeader())
-    getTodo()
+function makeTodoTable(todos) {
+  const table = document.getElementById("table")
+  table.innerHTML = ""
+
+  todos.unshift({id:"id", name: "name", todo:"todo", operation: "operation"})
+
+  for (const todo of todos) {
+    const tr = document.createElement("tr")
+    for (const c of Object.values(todo)) {
+      if (c === "button") {
+        const button = document.createElement("button")
+        button.textContent = "削除"
+        button.onclick = function() {
+          fetch(`/todos?id=${todo.id}`, {
+            method: 'DELETE',
+          }).then((response) => {
+            if (response.ok) {
+              alert("削除しました")
+              getTodo()
+            } else {
+              alert("削除失敗しましt")
+            }
+          }).catch((err) => {
+            console.log(err);
+          })
+        }
+        tr.appendChild(button)
+      } else {
+        const td = document.createElement("td")
+        td.textContent = c
+        tr.appendChild(td)
+      }
+    }
+    table.appendChild(tr)
+  }
 }
 
-table.appendChild(makeHeader())
 getTodo()

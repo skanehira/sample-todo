@@ -17,14 +17,27 @@ type Todo struct {
 	Todo string `json:"todo"`
 }
 
+func createTodo(w http.ResponseWriter, r *http.Request) {
+	var todo Todo
+	if err := json.NewDecoder(r.Body).Decode(&todo); err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+
+	if _, err := db.Exec("insert into todos (name, todo) values (?, ?)", todo.Name, todo.Todo); err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+}
+
 func getTodo(w http.ResponseWriter, r *http.Request) {
+	todos := []Todo{}
+
 	rows, err := db.Query("select * from todos")
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer rows.Close()
-
-	todos := []Todo{}
 
 	for rows.Next() {
 		var (
@@ -38,7 +51,7 @@ func getTodo(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		todos = append(todos, Todo{id, name, todo})
+		todos = append(todos, Todo{ID: id, Name: name, Todo: todo})
 	}
 
 	if err := json.NewEncoder(w).Encode(&todos); err != nil {
@@ -46,24 +59,10 @@ func getTodo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
-
-func createTodo(w http.ResponseWriter, r *http.Request) {
-	var todo Todo
-	if err := json.NewDecoder(r.Body).Decode(&todo); err != nil {
-		http.Error(w, err.Error(), 400)
-		return
-	}
-
-	if _, err := db.Exec("insert into todos (name, todo) values (?, ?)", todo.Name, todo.Todo); err != nil {
-		http.Error(w, err.Error(), 500)
-		return
-	}
-}
-
 func deleteTodo(w http.ResponseWriter, r *http.Request) {
 	id := r.URL.Query().Get("id")
 	if id == "" {
-		http.Error(w, "no id", 400)
+		http.Error(w, "id parameter is not found", 500)
 		return
 	}
 
@@ -88,10 +87,10 @@ func main() {
 	http.Handle("/", http.FileServer(http.Dir(".")))
 	http.HandleFunc("/todos", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
-		case http.MethodGet:
-			getTodo(w, r)
 		case http.MethodPost:
 			createTodo(w, r)
+		case http.MethodGet:
+			getTodo(w, r)
 		case http.MethodDelete:
 			deleteTodo(w, r)
 		}
